@@ -1,6 +1,9 @@
 <?php
 
 header('Content-Type: application/json');
+header("Access-Control-Allow-Origin: *"); // Mengizinkan semua origin
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
