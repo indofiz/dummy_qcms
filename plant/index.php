@@ -2,7 +2,7 @@
 
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *"); // Mengizinkan semua origin
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 date_default_timezone_set('UTC');
@@ -10,7 +10,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
 
 if ($method === 'POST') {
-    if (!$input || !isset($input['unit_name'])) {
+    if (!$input || !isset($input['plant_name'])) {
         echo json_encode([
             'status' => 'error',
             'message' => 'Invalid input data',
@@ -21,7 +21,9 @@ if ($method === 'POST') {
 
     $newData = [
         'id' => rand(1, 100),
-        'unit_name' => $input['unit_name']
+        'plant_name' => $input['plant_name'],
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s')
     ];
 
     echo json_encode([
@@ -44,7 +46,8 @@ if ($method === 'PATCH') {
 
     $updatedData = [
         'id' => $input['id'],
-        'unit_name' => $input['unit_name'] ?? 'Updated Unit'
+        'plant_name' => $input['plant_name'] ?? '',
+        'updated_at' => date('Y-m-d H:i:s')
     ];
 
     echo json_encode([
@@ -75,7 +78,7 @@ echo json_encode([
     'data' => array_map(function ($i) {
         return [
             'id' => $i,
-            'unit_name' => "Unit $i",
+            'plant_name' => "Plant {$i}",
             'created_at' => date('Y-m-d H:i:s', strtotime("-{$i} days")),
             'updated_at' => date('Y-m-d H:i:s', strtotime("-{$i} hours"))
         ];
