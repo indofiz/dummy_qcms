@@ -2,7 +2,7 @@
 
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *"); // Mengizinkan semua origin
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 date_default_timezone_set('UTC');
