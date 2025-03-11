@@ -1,12 +1,26 @@
 <?php
+
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 require '../vendor/autoload.php';
+
 use Firebase\JWT\JWT;
+
+header("Access-Control-Allow-Origin: http://localhost:5173"); // Ganti dengan domain frontend-mu
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 
 header("Content-Type: application/json");
 
 // Dummy user data
 $users = [
-    "user@example.com" => "password123"
+    "user@example.com" => "Password!123"
 ];
 
 // Secret key for JWT
@@ -44,13 +58,14 @@ if (isset($users[$email]) && $users[$email] === $password) {
     // Set refresh token in HTTP-only cookie
     setcookie("refresh_token", $refresh_token, [
         "httponly" => true,
-        "secure" => true, // Enable if using HTTPS
-        "samesite" => "Strict"
+        "secure" => false, // Enable if using HTTPS
+        // "samesite" => "None"
     ]);
 
     echo json_encode([
         "status" => "success",
         "message" => "Login successful",
+        "role" => "admin",
         "access_token" => $access_token
     ]);
 } else {
