@@ -1,63 +1,58 @@
 <?php
 require '../vendor/autoload.php';
-
 use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
-header('Content-Type: application/json');
+header("Content-Type: application/json");
 
-// Dummy data admin
-$admin = [
-    'email' => 'testing@gmail.com',
-    'password' => password_hash('admin', PASSWORD_BCRYPT), // Hash password
-    'id' => 2,
-    'name' => 'Add your name in the body',
-    'created_at' => '2024-11-17T11:30:13.000000Z',
-    'updated_at' => '2024-11-17T11:30:13.000000Z'
+// Dummy user data
+$users = [
+    "user@example.com" => "password123"
 ];
 
+// Secret key for JWT
 $secret_key = "your_secret_key";
-$issued_at = time();
-$expiration_time = $issued_at + (60 * 60); // Token berlaku 1 jam
-$refresh_expiration = $issued_at + (60 * 60 * 24 * 7); // Refresh token berlaku 7 hari
 
-// Mendapatkan input dari request
-$input = json_decode(file_get_contents('php://input'), true);
+// Get JSON input
+$data = json_decode(file_get_contents("php://input"), true);
 
-if (!isset($input['email']) || !isset($input['password'])) {
-    echo json_encode(["status" => "error", "message" => "Email atau password salah"]);
+if (!isset($data['email']) || !isset($data['password'])) {
+    echo json_encode(["status" => "error", "message" => "Email and password are required"]);
     exit;
 }
 
-// Validasi user
-if ($input['email'] === $admin['email'] && password_verify($input['password'], $admin['password'])) {
+$email = $data['email'];
+$password = $data['password'];
 
-    $payload = [
-        "iss" => "http://qcms_dummy.test/login.php",
-        "iat" => $issued_at,
-        "exp" => $expiration_time,
-        "sub" => $admin['id'],
+// Verify user credentials
+if (isset($users[$email]) && $users[$email] === $password) {
+    // Generate access token
+    $access_payload = [
+        "email" => $email,
+        "iat" => time(),
+        "exp" => time() + (60 * 60) // 1 hour expiration
     ];
+    $access_token = JWT::encode($access_payload, $secret_key, 'HS256');
 
-    $token = JWT::encode($payload, $secret_key, 'HS256');
-    $refresh_token = JWT::encode(["sub" => $admin['id'], "exp" => $refresh_expiration], $secret_key, 'HS256');
+    // Generate refresh token
+    $refresh_payload = [
+        "email" => $email,
+        "iat" => time(),
+        "exp" => time() + (7 * 24 * 60 * 60) // 7 days expiration
+    ];
+    $refresh_token = JWT::encode($refresh_payload, $secret_key, 'HS256');
+
+    // Set refresh token in HTTP-only cookie
+    setcookie("refresh_token", $refresh_token, [
+        "httponly" => true,
+        "secure" => true, // Enable if using HTTPS
+        "samesite" => "Strict"
+    ]);
 
     echo json_encode([
         "status" => "success",
-        "message" => "Berhasil login",
-        "data" => [
-            "user" => [
-                "id" => $admin['id'],
-                "name" => $admin['name'],
-                "email" => $admin['email'],
-                "email_verified_at" => null,
-                "created_at" => $admin['created_at'],
-                "updated_at" => $admin['updated_at'],
-            ],
-            "token" => $token,
-            "refresh_token" => $refresh_token
-        ]
+        "message" => "Login successful",
+        "access_token" => $access_token
     ]);
 } else {
-    echo json_encode(["status" => "error", "message" => "Email atau password salah"]);
+    echo json_encode(["status" => "error", "message" => "Invalid email or password"]);
 }
