@@ -43,8 +43,13 @@ try {
     echo json_encode([
         "status" => "success",
         "message" => "Token refreshed successfully",
-        "role" => "admin",
-        "access_token" => $new_access_token
+        "user" => [
+            "id" => 1,
+            "name" => "John Doe",
+            "role" => "admin",
+            "email" => $email
+        ],
+        "token" => $access_token
     ]);
 } catch (Exception $e) {
     echo json_encode(["status" => "error", "message" => "Invalid refresh token"]);
