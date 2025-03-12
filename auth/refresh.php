@@ -5,10 +5,11 @@ require '../vendor/autoload.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-header("Access-Control-Allow-Origin: http://your-frontend-domain.com");
-header("Access-Control-Allow-Methods: GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header('Content-Type: application/json');
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -20,8 +21,14 @@ header("Content-Type: application/json");
 // Secret key for JWT
 $secret_key = "your_secret_key";
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 // Check if refresh token exists in HTTP-only cookie
 if (!isset($_COOKIE['refresh_token'])) {
+    http_response_code(401);
     echo json_encode(["status" => "error", "message" => "Refresh token is required"]);
     exit;
 }
@@ -47,10 +54,11 @@ try {
             "id" => 1,
             "name" => "John Doe",
             "role" => "admin",
-            "email" => $email
+            "email" => $decoded->email
         ],
-        "token" => $access_token
+        "token" => $new_access_token
     ]);
 } catch (Exception $e) {
-    echo json_encode(["status" => "error", "message" => "Invalid refresh token"]);
+    http_response_code(401);
+    echo json_encode(["status" => "error", "message" => "Invalid or expired refresh token"]);
 }

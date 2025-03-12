@@ -1,14 +1,14 @@
 <?php
 
+require '../vendor/autoload.php';
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
 header("Access-Control-Allow-Origin: http://localhost:5173"); // Ganti dengan domain frontend-mu
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
-
-require '../vendor/autoload.php';
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
 $secret_key = "your_secret_key";
 
@@ -19,6 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Mendapatkan token dari header Authorization
 $headers = getallheaders();
+error_log("Token received: " . $headers['Authorization']);
+
 if (!isset($headers['Authorization'])) {
     http_response_code(401);
     echo json_encode(["status" => "error", "message" => "Authorization token is missing"]);

@@ -1,6 +1,6 @@
 <?php
 
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
 require '../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
