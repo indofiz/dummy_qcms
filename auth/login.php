@@ -65,13 +65,15 @@ if (isset($users[$email]) && $users[$email] === $password) {
     echo json_encode([
         "status" => "success",
         "message" => "Login successful",
-        "user" => [
-            "id" => 1,
-            "name" => "John Doe",
-            "role" => "admin",
-            "email" => $email
-        ],
-        "token" => $access_token
+        "data" => [
+            "user" => [
+                "id" => 1,
+                "name" => "John Doe",
+                "role" => "admin",
+                "email" => $email
+            ],
+            "token" => $access_token
+        ]
     ]);
 } else {
     echo json_encode(["status" => "error", "message" => "Invalid email or password"]);

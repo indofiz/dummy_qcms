@@ -1,6 +1,7 @@
 <?php
 
 require '../vendor/autoload.php';
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -32,18 +33,20 @@ $token = str_replace("Bearer ", "", $headers['Authorization']);
 try {
     // Decode token
     $decoded = JWT::decode($token, new Key($secret_key, 'HS256'));
-    
+
     // Kirim data user
     echo json_encode([
         "status" => "success",
         "message" => "Token is valid",
-        "user" => [
-            "id" => 1,
-            "name" => "John Doe",
-            "role" => "admin",
-            "email" => $decoded->email
-        ],
-        "token" => $token
+        "data" => [
+            "user" => [
+                "id" => 1,
+                "name" => "John Doe",
+                "role" => "admin",
+                "email" => $decoded->email
+            ],
+            "token" => $token
+        ]
     ]);
 } catch (Exception $e) {
     http_response_code(401);

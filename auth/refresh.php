@@ -50,13 +50,15 @@ try {
     echo json_encode([
         "status" => "success",
         "message" => "Token refreshed successfully",
-        "user" => [
-            "id" => 1,
-            "name" => "John Doe",
-            "role" => "admin",
-            "email" => $decoded->email
-        ],
-        "token" => $new_access_token
+        "data" => [
+            "user" => [
+                "id" => 1,
+                "name" => "John Doe",
+                "role" => "admin",
+                "email" => $decoded->email
+            ],
+            "token" => $new_access_token
+        ]
     ]);
 } catch (Exception $e) {
     http_response_code(401);
